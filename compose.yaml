@@ -25,6 +25,8 @@ services:
       JWT_JWKS_URL: http://auth:3001/api/auth/jwks
       JWT_ISSUER: http://localhost:3001
       JWT_AUDIENCE: http://localhost:3001
+      AUTH_URL: http://auth:3001
+      MAILPIT_URL: http://mailpit:8025
     depends_on:
       postgres:
         condition: service_healthy

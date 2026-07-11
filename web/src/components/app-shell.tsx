@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-4 text-sm text-stone-600">
             <span className="hidden sm:inline">{user?.email}</span>
-            <button className="font-medium text-stone-950 hover:underline" onClick={handleSignOut}>
+            <button type="button" className="font-medium text-stone-950 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-950 rounded-sm px-1" onClick={handleSignOut}>
               Sign out
             </button>
           </div>

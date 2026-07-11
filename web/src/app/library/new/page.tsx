@@ -39,13 +39,28 @@ export default function NewBookPage() {
         <p className="text-sm font-medium text-amber-700">Add a book</p>
         <h1 className="mt-1 text-3xl font-semibold tracking-tight">Put a new PDF on your shelf.</h1>
         <form className="mt-8 grid gap-5 rounded-2xl border border-stone-200 bg-white p-6" onSubmit={submit}>
-          <label className="grid gap-1 text-sm font-medium">Title<input required name="title" className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-          <label className="grid gap-1 text-sm font-medium">Author<input required name="author" className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-          <label className="grid gap-1 text-sm font-medium">Description<textarea name="description" rows={4} className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-          <label className="grid gap-1 text-sm font-medium">Reading status<select name="reading_status" defaultValue="unread" className="rounded-lg border border-stone-300 px-3 py-2 font-normal"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select></label>
-          <label className="grid gap-1 text-sm font-medium">PDF file<input required accept="application/pdf,.pdf" name="file" type="file" className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-          <button disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60">{submitting ? "Adding book…" : "Add to library"}</button>
-          {message && <p className="text-sm text-red-700">{message}</p>}
+          <div className="grid gap-1">
+            <label htmlFor="title" className="text-sm font-medium">Title</label>
+            <input id="title" required name="title" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+          </div>
+          <div className="grid gap-1">
+            <label htmlFor="author" className="text-sm font-medium">Author</label>
+            <input id="author" required name="author" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+          </div>
+          <div className="grid gap-1">
+            <label htmlFor="description" className="text-sm font-medium">Description</label>
+            <textarea id="description" name="description" rows={4} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+          </div>
+          <div className="grid gap-1">
+            <label htmlFor="reading_status" className="text-sm font-medium">Reading status</label>
+            <select id="reading_status" name="reading_status" defaultValue="unread" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select>
+          </div>
+          <div className="grid gap-1">
+            <label htmlFor="file" className="text-sm font-medium">PDF file</label>
+            <input id="file" required accept="application/pdf,.pdf" name="file" type="file" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+          </div>
+          <button type="submit" disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">{submitting ? "Adding book…" : "Add to library"}</button>
+          {message && <p role="alert" aria-live="polite" className="text-sm text-red-700">{message}</p>}
         </form>
       </main>
     </AppShell>

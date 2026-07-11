@@ -36,13 +36,19 @@ export default function LoginPage() {
       <h1 className="mt-6 text-2xl font-semibold">Welcome back</h1>
       <p className="mt-2 text-sm leading-6 text-stone-600">Sign in to continue reading.</p>
       <form className="mt-6 grid gap-4" onSubmit={submit}>
-        <label className="grid gap-1 text-sm font-medium">Email<input required name="email" type="email" className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-        <label className="grid gap-1 text-sm font-medium">Password<input required name="password" type="password" className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-        <button disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60">
+        <div className="grid gap-1">
+          <label htmlFor="email" className="text-sm font-medium">Email</label>
+          <input id="email" required name="email" type="email" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+        </div>
+        <div className="grid gap-1">
+          <label htmlFor="password" className="text-sm font-medium">Password</label>
+          <input id="password" required name="password" type="password" className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+        </div>
+        <button type="submit" disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">
           {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      {message && <p className="mt-4 text-sm text-red-700">{message}</p>}
+      {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-red-700">{message}</p>}
       <div className="mt-6 flex justify-between text-sm">
         <Link className="text-stone-600 underline" href="/forgot-password">Forgot password?</Link>
         <Link className="text-stone-600 underline" href="/signup">Create account</Link>

@@ -17,15 +17,15 @@ export default function Home() {
       </p>
       <div className="flex gap-3">
         {!loading && user ? (
-          <Link className="rounded-lg bg-stone-950 px-5 py-3 font-medium text-white" href="/library">
+          <Link className="rounded-lg bg-stone-950 px-5 py-3 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" href="/library">
             Open your library
           </Link>
         ) : (
           <>
-            <Link className="rounded-lg bg-stone-950 px-5 py-3 font-medium text-white" href="/signup">
+            <Link className="rounded-lg bg-stone-950 px-5 py-3 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" href="/signup">
               Create an account
             </Link>
-            <Link className="rounded-lg border border-stone-300 px-5 py-3 font-medium" href="/login">
+            <Link className="rounded-lg border border-stone-300 px-5 py-3 font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" href="/login">
               Sign in
             </Link>
           </>

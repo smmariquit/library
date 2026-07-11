@@ -90,18 +90,30 @@ export default function BookPage() {
             <p className="text-sm font-medium text-amber-700">{book.reading_status}</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight">{book.title}</h1>
             <p className="mt-2 text-stone-600">{book.author}</p>
-            <button className="mt-6 rounded-lg bg-stone-950 px-4 py-3 font-medium text-white" onClick={openReader}>Read PDF</button>
-            {pdfURL && <iframe title={`Reading ${book.title}`} src={pdfURL} className="mt-6 h-[72vh] w-full rounded-xl border border-stone-200 bg-white" />}
+            <button type="button" className="mt-6 rounded-lg bg-stone-950 px-4 py-3 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" onClick={openReader}>Read PDF</button>
+            {pdfURL && <iframe title={`PDF Reader for ${book.title}`} src={pdfURL} className="mt-6 h-[72vh] w-full rounded-xl border border-stone-200 bg-white" />}
           </section>
           <form className="grid content-start gap-4 rounded-2xl border border-stone-200 bg-white p-5" onSubmit={update}>
             <h2 className="font-semibold">Book details</h2>
-            <label className="grid gap-1 text-sm font-medium">Title<input required name="title" defaultValue={book.title} className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-            <label className="grid gap-1 text-sm font-medium">Author<input required name="author" defaultValue={book.author} className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-            <label className="grid gap-1 text-sm font-medium">Description<textarea name="description" defaultValue={book.description ?? ""} rows={4} className="rounded-lg border border-stone-300 px-3 py-2 font-normal" /></label>
-            <label className="grid gap-1 text-sm font-medium">Status<select name="reading_status" defaultValue={book.reading_status} className="rounded-lg border border-stone-300 px-3 py-2 font-normal"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select></label>
-            <button className="rounded-lg bg-stone-950 px-4 py-2.5 font-medium text-white">Save changes</button>
-            <button type="button" className="rounded-lg px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50" onClick={remove}>Delete book</button>
-            {message && <p className="text-sm text-stone-700">{message}</p>}
+            <div className="grid gap-1">
+              <label htmlFor="title" className="text-sm font-medium">Title</label>
+              <input id="title" required name="title" defaultValue={book.title} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="author" className="text-sm font-medium">Author</label>
+              <input id="author" required name="author" defaultValue={book.author} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="description" className="text-sm font-medium">Description</label>
+              <textarea id="description" name="description" defaultValue={book.description ?? ""} rows={4} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="reading_status" className="text-sm font-medium">Status</label>
+              <select id="reading_status" name="reading_status" defaultValue={book.reading_status} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select>
+            </div>
+            <button type="submit" className="rounded-lg bg-stone-950 px-4 py-2.5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">Save changes</button>
+            <button type="button" className="rounded-lg px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-950" onClick={remove}>Delete book</button>
+            {message && <p role="alert" aria-live="polite" className="text-sm text-stone-700">{message}</p>}
           </form>
         </div>
       </main>

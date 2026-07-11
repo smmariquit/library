@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
         <button type="submit" disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">{submitting ? "Updating…" : "Update password"}</button>
       </form>
       {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-stone-700">{message}</p>}
-      <Link className="mt-6 inline-block text-sm text-stone-600 underline" href="/login">Back to sign in</Link>
+      <Link className="mt-6 inline-block text-sm text-stone-800 underline" href="/login">Back to sign in</Link>
     </AuthCard>
   );
 }

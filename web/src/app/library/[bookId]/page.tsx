@@ -78,18 +78,18 @@ export default function BookPage() {
   }
 
   if (loading || !token || !book) {
-    return <main className="p-8 text-stone-600">{message || "Loading book…"}</main>;
+    return <main className="p-8 text-stone-800">{message || "Loading book…"}</main>;
   }
 
   return (
     <AppShell>
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <Link className="text-sm text-stone-600 underline" href="/library">← Back to library</Link>
+        <Link className="text-sm text-stone-800 underline" href="/library">← Back to library</Link>
         <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <section>
-            <p className="text-sm font-medium text-amber-700">{book.reading_status}</p>
+            <p className="text-sm font-medium text-amber-900">{book.reading_status}</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight">{book.title}</h1>
-            <p className="mt-2 text-stone-600">{book.author}</p>
+            <p className="mt-2 text-stone-800">{book.author}</p>
             <button type="button" className="mt-6 rounded-lg bg-stone-950 px-4 py-3 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" onClick={openReader}>Read PDF</button>
             {pdfURL && <iframe title={`PDF Reader for ${book.title}`} src={pdfURL} className="mt-6 h-[72vh] w-full rounded-xl border border-stone-200 bg-white" />}
           </section>
@@ -112,7 +112,7 @@ export default function BookPage() {
               <select id="reading_status" name="reading_status" defaultValue={book.reading_status} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select>
             </div>
             <button type="submit" className="rounded-lg bg-stone-950 px-4 py-2.5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">Save changes</button>
-            <button type="button" className="rounded-lg px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-950" onClick={remove}>Delete book</button>
+            <button type="button" className="rounded-lg px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-950" onClick={remove}>Delete book</button>
             {message && <p role="alert" aria-live="polite" className="text-sm text-stone-700">{message}</p>}
           </form>
         </div>

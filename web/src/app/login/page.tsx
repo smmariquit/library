@@ -34,7 +34,7 @@ export default function LoginPage() {
   return (
     <AuthCard>
       <h1 className="mt-6 text-2xl font-semibold">Welcome back</h1>
-      <p className="mt-2 text-sm leading-6 text-stone-600">Sign in to continue reading.</p>
+      <p className="mt-2 text-sm leading-6 text-stone-800">Sign in to continue reading.</p>
       <form className="mt-6 grid gap-4" onSubmit={submit}>
         <div className="grid gap-1">
           <label htmlFor="email" className="text-sm font-medium">Email</label>
@@ -48,10 +48,10 @@ export default function LoginPage() {
           {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
-      {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-red-700">{message}</p>}
+      {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-red-900">{message}</p>}
       <div className="mt-6 flex justify-between text-sm">
-        <Link className="text-stone-600 underline" href="/forgot-password">Forgot password?</Link>
-        <Link className="text-stone-600 underline" href="/signup">Create account</Link>
+        <Link className="text-stone-800 underline" href="/forgot-password">Forgot password?</Link>
+        <Link className="text-stone-800 underline" href="/signup">Create account</Link>
       </div>
     </AuthCard>
   );

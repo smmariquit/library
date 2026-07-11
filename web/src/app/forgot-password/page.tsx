@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
   return (
     <AuthCard>
       <h1 className="mt-6 text-2xl font-semibold">Reset your password</h1>
-      <p className="mt-2 text-sm leading-6 text-stone-600">We’ll send a reset link to your local Mailpit inbox.</p>
+      <p className="mt-2 text-sm leading-6 text-stone-800">We’ll send a reset link to your local Mailpit inbox.</p>
       <form className="mt-6 grid gap-4" onSubmit={submit}>
         <div className="grid gap-1">
           <label htmlFor="email" className="text-sm font-medium">Email</label>
@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
         <button type="submit" disabled={submitting} className="rounded-lg bg-stone-950 px-4 py-3 font-medium text-white disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">{submitting ? "Sending…" : "Send reset email"}</button>
       </form>
       {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-stone-700">{message}</p>}
-      <Link className="mt-6 inline-block text-sm text-stone-600 underline" href="/login">Back to sign in</Link>
+      <Link className="mt-6 inline-block text-sm text-stone-800 underline" href="/login">Back to sign in</Link>
     </AuthCard>
   );
 }

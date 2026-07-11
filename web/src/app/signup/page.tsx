@@ -27,7 +27,7 @@ export default function SignUpPage() {
   return (
     <AuthCard>
       <h1 className="mt-6 text-2xl font-semibold">Create your library</h1>
-      <p className="mt-2 text-sm leading-6 text-stone-600">Keep your reading shelf in one quiet place.</p>
+      <p className="mt-2 text-sm leading-6 text-stone-800">Keep your reading shelf in one quiet place.</p>
       <form className="mt-6 grid gap-4" onSubmit={submit}>
         <div className="grid gap-1">
           <label htmlFor="name" className="text-sm font-medium">Name</label>
@@ -46,7 +46,7 @@ export default function SignUpPage() {
         </button>
       </form>
       {message && <p role="alert" aria-live="polite" className="mt-4 text-sm text-stone-700">{message}</p>}
-      <p className="mt-6 text-sm text-stone-600">Already have an account? <Link className="font-medium text-stone-950 underline" href="/login">Sign in</Link></p>
+      <p className="mt-6 text-sm text-stone-800">Already have an account? <Link className="font-medium text-stone-950 underline" href="/login">Sign in</Link></p>
     </AuthCard>
   );
 }

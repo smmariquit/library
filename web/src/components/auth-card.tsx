@@ -1,16 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { BookOpen } from "lucide-react";
+import { AuthBackground } from "@/components/page-background";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function AuthCard({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-6 py-12">
-      <section className="w-full rounded-2xl border border-stone-200 bg-white p-7 shadow-sm">
-        <Link href="/" className="text-sm font-medium text-stone-800 hover:text-stone-950">
-          ← Personal Library
-        </Link>
-        {children}
-      </section>
-    </main>
+    <AuthBackground>
+      <main className="mx-auto flex min-h-screen max-w-md items-center px-6 py-12">
+        <section className="panel w-full p-7">
+          <div className="flex items-start justify-between gap-4">
+            <Link href="/" className="brand-mark text-strong hover:opacity-80">
+              <span className="brand-icon h-9 w-9">
+                <BookOpen aria-hidden="true" className="h-4 w-4" />
+              </span>
+              Personal Library
+            </Link>
+            <ThemeToggle />
+          </div>
+          {children}
+        </section>
+      </main>
+    </AuthBackground>
   );
 }

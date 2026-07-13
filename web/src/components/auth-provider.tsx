@@ -26,29 +26,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const session = await authClient.getSession();
-    if (!session.data?.user) {
+    try {
+      const session = await authClient.getSession();
+      if (!session.data?.user) {
+        setUser(null);
+        setToken(null);
+        return;
+      }
+
+      const jwt = await authClient.token();
+      if (!jwt.data?.token) {
+        setUser(null);
+        setToken(null);
+        return;
+      }
+
+      setUser({
+        id: session.data.user.id,
+        name: session.data.user.name,
+        email: session.data.user.email,
+      });
+      setToken(jwt.data.token);
+    } catch {
       setUser(null);
       setToken(null);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const jwt = await authClient.token();
-    if (!jwt.data?.token) {
-      setUser(null);
-      setToken(null);
-      setLoading(false);
-      return;
-    }
-
-    setUser({
-      id: session.data.user.id,
-      name: session.data.user.name,
-      email: session.data.user.email,
-    });
-    setToken(jwt.data.token);
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -59,7 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const signOut = useCallback(async () => {
-    await authClient.signOut();
+    const result = await authClient.signOut();
+    if (result.error) {
+      throw new Error(result.error.message ?? "Could not sign out. Please try again.");
+    }
     setUser(null);
     setToken(null);
   }, []);

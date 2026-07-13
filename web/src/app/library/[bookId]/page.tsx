@@ -1,19 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowLeft, BookOpen, Save, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
-import { api, Book } from "@/lib/api";
+import { Alert, Button, FieldLabel, LoadingBook, SelectInput, StatusBadge, TextArea, TextInput } from "@/components/ui";
+import { api, type Book } from "@/lib/api";
 
 export default function BookPage() {
   const params = useParams<{ bookId: string }>();
   const router = useRouter();
   const { token, loading } = useAuth();
   const [book, setBook] = useState<Book | null>(null);
-  const [message, setMessage] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [feedback, setFeedback] = useState<{ tone: "error" | "success"; text: string } | null>(null);
   const [pdfURL, setPdfURL] = useState<string | null>(null);
+  const [readerLoading, setReaderLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!loading && !token) router.replace("/login");
@@ -21,11 +28,15 @@ export default function BookPage() {
 
   useEffect(() => {
     if (!token) return;
-    api(`/books/${params.bookId}`, token)
+    const controller = new AbortController();
+    api(`/books/${params.bookId}`, token, { signal: controller.signal })
       .then((response) => response.json())
       .then(setBook)
-      .catch((error: Error) => setMessage(error.message));
-  }, [params.bookId, token]);
+      .catch((error: Error) => {
+        if (error.name !== "AbortError") setLoadError(error.message);
+      });
+    return () => controller.abort();
+  }, [attempt, params.bookId, token]);
 
   useEffect(() => () => {
     if (pdfURL) URL.revokeObjectURL(pdfURL);
@@ -34,6 +45,8 @@ export default function BookPage() {
   async function update(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!token || !book) return;
+    setSaving(true);
+    setFeedback(null);
     const form = new FormData(event.currentTarget);
     try {
       const response = await api(`/books/${book.id}`, token, {
@@ -47,73 +60,125 @@ export default function BookPage() {
         }),
       });
       setBook(await response.json());
-      setMessage("Saved.");
+      setFeedback({ tone: "success", text: "Changes saved." });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not save changes.");
+      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "Could not save changes." });
+    } finally {
+      setSaving(false);
     }
   }
 
   async function openReader() {
     if (!token || !book) return;
+    setReaderLoading(true);
+    setFeedback(null);
     try {
       const response = await api(`/books/${book.id}/content`, token);
       const nextURL = URL.createObjectURL(await response.blob());
-      setPdfURL((current) => {
-        if (current) URL.revokeObjectURL(current);
-        return nextURL;
-      });
+      setPdfURL(nextURL);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not open this PDF.");
+      setReaderLoading(false);
+      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "Could not open this PDF." });
     }
   }
 
   async function remove() {
     if (!token || !book || !window.confirm(`Delete “${book.title}”?`)) return;
+    setDeleting(true);
+    setFeedback(null);
     try {
       await api(`/books/${book.id}`, token, { method: "DELETE" });
       router.push("/library");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Could not delete this book.");
+      setFeedback({ tone: "error", text: error instanceof Error ? error.message : "Could not delete this book." });
+      setDeleting(false);
     }
   }
 
-  if (loading || !token || !book) {
-    return <main className="p-8 text-stone-800">{message || "Loading book…"}</main>;
+  if (loading || !token || (!book && !loadError)) return <LoadingBook />;
+
+  if (loadError || !book) {
+    return (
+      <AppShell>
+        <main className="mx-auto max-w-2xl px-6 py-16">
+          <div className="panel p-6">
+            <Alert tone="error">{loadError || "This book could not be loaded."}</Alert>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button
+                onClick={() => {
+                  setLoadError("");
+                  setAttempt((value) => value + 1);
+                }}
+              >
+                Try again
+              </Button>
+              <Link className="btn-secondary" href="/library">Back to library</Link>
+            </div>
+          </div>
+        </main>
+      </AppShell>
+    );
   }
 
   return (
     <AppShell>
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <Link className="text-sm text-stone-800 underline" href="/library">← Back to library</Link>
+        <Link className="text-sm font-medium text-muted underline decoration-stone-300 underline-offset-4 hover:text-strong" href="/library">
+          <span className="inline-flex items-center gap-2"><ArrowLeft aria-hidden="true" className="h-4 w-4" />Back to library</span>
+        </Link>
         <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <section>
-            <p className="text-sm font-medium text-amber-900">{book.reading_status}</p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight">{book.title}</h1>
-            <p className="mt-2 text-stone-800">{book.author}</p>
-            <button type="button" className="mt-6 rounded-lg bg-stone-950 px-4 py-3 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950" onClick={openReader}>Read PDF</button>
-            {pdfURL && <iframe title={`PDF Reader for ${book.title}`} src={pdfURL} className="mt-6 h-[72vh] w-full rounded-xl border border-stone-200 bg-white" />}
+          <section className="panel p-6">
+            <StatusBadge status={book.reading_status} />
+            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-strong">{book.title}</h1>
+            <p className="mt-2 text-lg text-muted">{book.author}</p>
+            <Button className="mt-6" loading={readerLoading} onClick={openReader}>
+              {!readerLoading && <BookOpen aria-hidden="true" className="h-4 w-4" />}
+              {readerLoading ? "Opening PDF…" : pdfURL ? "Reload PDF" : "Read PDF"}
+            </Button>
+            {pdfURL && (
+              <div className="mt-6">
+                {readerLoading && <div className="mb-3"><Alert tone="waiting">Rendering your PDF…</Alert></div>}
+                <iframe
+                  title={`PDF Reader for ${book.title}`}
+                  src={pdfURL}
+                  aria-busy={readerLoading}
+                  onLoad={() => setReaderLoading(false)}
+                  className="h-[72vh] w-full rounded-xl border border-stone-200 bg-white"
+                />
+              </div>
+            )}
           </section>
-          <form className="grid content-start gap-4 rounded-2xl border border-stone-200 bg-white p-5" onSubmit={update}>
-            <h2 className="font-semibold">Book details</h2>
+          <form className="panel grid content-start gap-4 p-5" onSubmit={update}>
+            <h2 className="text-xl font-semibold text-strong">Book details</h2>
             <div className="grid gap-1">
-              <label htmlFor="title" className="text-sm font-medium">Title</label>
-              <input id="title" required name="title" defaultValue={book.title} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+              <FieldLabel htmlFor="title">Title</FieldLabel>
+              <TextInput id="title" required name="title" defaultValue={book.title} />
             </div>
             <div className="grid gap-1">
-              <label htmlFor="author" className="text-sm font-medium">Author</label>
-              <input id="author" required name="author" defaultValue={book.author} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+              <FieldLabel htmlFor="author">Author</FieldLabel>
+              <TextInput id="author" required name="author" defaultValue={book.author} />
             </div>
             <div className="grid gap-1">
-              <label htmlFor="description" className="text-sm font-medium">Description</label>
-              <textarea id="description" name="description" defaultValue={book.description ?? ""} rows={4} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950" />
+              <FieldLabel htmlFor="description">Description</FieldLabel>
+              <TextArea id="description" name="description" defaultValue={book.description ?? ""} rows={4} />
             </div>
             <div className="grid gap-1">
-              <label htmlFor="reading_status" className="text-sm font-medium">Status</label>
-              <select id="reading_status" name="reading_status" defaultValue={book.reading_status} className="rounded-lg border border-stone-300 px-3 py-2 font-normal focus:border-stone-950 focus:outline-none focus:ring-1 focus:ring-stone-950"><option value="unread">Unread</option><option value="reading">Reading</option><option value="finished">Finished</option></select>
+              <FieldLabel htmlFor="reading_status">Status</FieldLabel>
+              <SelectInput id="reading_status" name="reading_status" defaultValue={book.reading_status}>
+                <option value="unread">Unread</option>
+                <option value="reading">Reading</option>
+                <option value="finished">Finished</option>
+              </SelectInput>
             </div>
-            <button type="submit" className="rounded-lg bg-stone-950 px-4 py-2.5 font-medium text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-950">Save changes</button>
-            <button type="button" className="rounded-lg px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-stone-950" onClick={remove}>Delete book</button>
-            {message && <p role="alert" aria-live="polite" className="text-sm text-stone-700">{message}</p>}
+            <Button type="submit" loading={saving} disabled={deleting}>
+              {!saving && <Save aria-hidden="true" className="h-4 w-4" />}
+              {saving ? "Saving…" : "Save changes"}
+            </Button>
+            <Button type="button" variant="danger" loading={deleting} disabled={saving} onClick={remove}>
+              {!deleting && <Trash2 aria-hidden="true" className="h-4 w-4" />}
+              {deleting ? "Deleting…" : "Delete book"}
+            </Button>
+            {feedback && <Alert tone={feedback.tone}>{feedback.text}</Alert>}
           </form>
         </div>
       </main>

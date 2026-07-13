@@ -13,7 +13,13 @@ export type Book = {
 export async function api(path: string, token: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${token}`);
-  const response = await fetch(`${apiURL}${path}`, { ...init, headers });
+  let response: Response;
+  try {
+    response = await fetch(`${apiURL}${path}`, { ...init, headers });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") throw error;
+    throw new Error("The library service is unavailable. Please try again.");
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);

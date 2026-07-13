@@ -16,20 +16,35 @@ A local full-stack personal library for uploading, organizing, and reading PDF b
 
 ## Architecture
 
-```text
-Browser
-  |-- Next.js web :3000
-  |      |-- Better Auth / Hono :3001 (accounts, mail, JWT)
-  |      '-- FastAPI :8000 (Bearer JWT, books, PDF reads)
-  |
-  '-- Mailpit UI :8025
+```mermaid
+flowchart TB
+    Browser["Browser"]
 
-FastAPI --> PostgreSQL library schema
-        --> Redis library-list cache
-        --> MinIO books bucket
+    subgraph frontend["Frontend"]
+        Web["Next.js web :3000"]
+    end
 
-Hono/Better Auth --> PostgreSQL auth schema
-                 --> Mailpit SMTP :1025
+    subgraph services["Application services"]
+        Auth["Hono + Better Auth :3001<br/>accounts, mail, JWT"]
+        API["FastAPI :8000<br/>Bearer JWT, books, PDF reads"]
+    end
+
+    subgraph data["Data & infrastructure"]
+        PG[("PostgreSQL")]
+        Redis[("Redis")]
+        MinIO[("MinIO books bucket")]
+        Mailpit["Mailpit<br/>SMTP :1025 / UI :8025"]
+    end
+
+    Browser --> Web
+    Browser -.->|"verification inbox"| Mailpit
+    Web --> Auth
+    Web --> API
+    Auth -->|"auth schema"| PG
+    Auth -->|"SMTP"| Mailpit
+    API -->|"library schema"| PG
+    API -->|"library-list cache"| Redis
+    API --> MinIO
 ```
 
 PostgreSQL is shared as a server only. Better Auth owns the `auth` schema; FastAPI owns the `library` schema and never writes Better Auth's tables.
@@ -88,9 +103,9 @@ Password: password123
 ### Verification
 
 1. Open the frontend and sign up with an email and password.
-2. Open Mailpit at http://localhost:8025.
-3. Open the **Verify your Library email** message and follow its link.
-4. Return to the app and log in.
+2. Check your inbox for **Verify your Library email**.
+3. Click the verification link. It opens the app at `/verify`, confirms your account, and signs you in.
+4. If you are developing locally, the pending page can surface the same link without opening Mailpit.
 
 ### Password reset
 

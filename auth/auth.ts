@@ -2,6 +2,11 @@ import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins";
 import nodemailer from "nodemailer";
 import { Pool } from "pg";
+import {
+  verificationEmailHtml,
+  verificationEmailText,
+  verificationLink,
+} from "./email.js";
 
 const baseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:3001";
 const webURL = process.env.WEB_URL ?? "http://localhost:3000";
@@ -12,12 +17,13 @@ const mailer = nodemailer.createTransport({
   secure: false,
 });
 
-async function sendMail(to: string, subject: string, text: string) {
+async function sendMail(to: string, subject: string, text: string, html: string) {
   await mailer.sendMail({
     from: process.env.SMTP_FROM ?? "no-reply@library.local",
     to,
     subject,
     text,
+    html,
   });
 }
 
@@ -33,13 +39,26 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) =>
-      sendMail(user.email, "Reset your Library password", `Reset your password: ${url}`),
+      sendMail(
+        user.email,
+        "Reset your Library password",
+        `Reset your password: ${url}`,
+        `<p><a href="${url}">Reset your Library password</a></p><p>${url}</p>`,
+      ),
   },
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,
-    sendVerificationEmail: async ({ user, url }) =>
-      sendMail(user.email, "Verify your Library email", `Verify your email: ${url}`),
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, token }) => {
+      const url = verificationLink(token);
+      void sendMail(
+        user.email,
+        "Verify your Library email",
+        verificationEmailText(url),
+        verificationEmailHtml(url),
+      );
+    },
   },
   plugins: [jwt()],
 });

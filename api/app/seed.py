@@ -5,6 +5,7 @@ import os
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from http.cookiejar import CookieJar
@@ -19,11 +20,6 @@ AUTH_URL = os.environ.get("AUTH_URL", "http://auth:3001")
 MAILPIT_URL = os.environ.get("MAILPIT_URL", "http://mailpit:8025")
 
 
-class NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, request, fp, code, message, headers, newurl):
-        return None
-
-
 def request_json(opener, url: str, body: dict | None = None) -> dict:
     data = json.dumps(body).encode() if body is not None else None
     request = urllib.request.Request(
@@ -36,7 +32,7 @@ def request_json(opener, url: str, body: dict | None = None) -> dict:
         return json.loads(response.read())
 
 
-def verification_url() -> str:
+def verification_token() -> str:
     for _ in range(10):
         messages = request_json(urllib.request.build_opener(), f"{MAILPIT_URL}/api/v1/messages")
         message = next(
@@ -50,9 +46,12 @@ def verification_url() -> str:
         )
         if message:
             detail = request_json(urllib.request.build_opener(), f"{MAILPIT_URL}/api/v1/message/{message['ID']}")
-            match = re.search(r"https?://\S+", detail["Text"])
+            body = detail.get("Text") or detail.get("HTML") or ""
+            match = re.search(r"https?://\S+", body)
             if match:
-                return match.group(0).replace("http://localhost:3001", AUTH_URL)
+                token = urllib.parse.parse_qs(urllib.parse.urlparse(match.group(0)).query).get("token", [None])[0]
+                if token:
+                    return token
         time.sleep(1)
     raise RuntimeError("Mailpit did not receive the demo verification email")
 
@@ -83,12 +82,10 @@ def ensure_demo_user() -> str:
     except urllib.error.HTTPError as error:
         if error.code != 403:
             raise
-        verification = verification_url()
-        try:
-            urllib.request.build_opener(NoRedirect()).open(verification)
-        except urllib.error.HTTPError as redirect:
-            if redirect.code not in (302, 303):
-                raise
+        token = verification_token()
+        urllib.request.urlopen(
+            f"{AUTH_URL}/api/auth/verify-email?token={urllib.parse.quote(token)}"
+        )
         request_json(
             opener,
             f"{AUTH_URL}/api/auth/sign-in/email",

@@ -6,8 +6,6 @@ services:
     environment:
       NEXT_PUBLIC_AUTH_URL: http://localhost:3001
       NEXT_PUBLIC_API_URL: http://localhost:8000
-      MAILPIT_URL: http://mailpit:8025
-      WEB_URL: http://localhost:3000
     depends_on:
       auth:
         condition: service_started
@@ -29,6 +27,7 @@ services:
       JWT_AUDIENCE: http://localhost:3001
       AUTH_URL: http://auth:3001
       MAILPIT_URL: http://mailpit:8025
+      WEB_URL: http://localhost:3000
     depends_on:
       postgres:
         condition: service_healthy

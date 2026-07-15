@@ -3,6 +3,9 @@ import { jwt } from "better-auth/plugins";
 import nodemailer from "nodemailer";
 import { Pool } from "pg";
 import {
+  resetPasswordEmailHtml,
+  resetPasswordEmailText,
+  resetPasswordLink,
   verificationEmailHtml,
   verificationEmailText,
   verificationLink,
@@ -38,13 +41,15 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     revokeSessionsOnPasswordReset: true,
-    sendResetPassword: async ({ user, url }) =>
-      sendMail(
+    sendResetPassword: async ({ user, token }) => {
+      const resetUrl = resetPasswordLink(token);
+      void sendMail(
         user.email,
         "Reset your Library password",
-        `Reset your password: ${url}`,
-        `<p><a href="${url}">Reset your Library password</a></p><p>${url}</p>`,
-      ),
+        resetPasswordEmailText(resetUrl),
+        resetPasswordEmailHtml(resetUrl),
+      );
+    },
   },
   emailVerification: {
     sendOnSignUp: true,

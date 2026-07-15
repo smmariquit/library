@@ -103,9 +103,9 @@ Password: password123
 ### Verification
 
 1. Open the frontend and sign up with an email and password.
-2. Check your inbox for **Verify your Library email**.
-3. Click the verification link. It opens the app at `/verify`, confirms your account, and signs you in.
-4. If you are developing locally, the pending page can surface the same link without opening Mailpit.
+2. Open Mailpit at http://localhost:8025.
+3. Open the **Verify your Library email** message and click the verification link.
+4. The link opens the app at `/verify`, confirms your account, and signs you in.
 
 ### Password reset
 
@@ -175,13 +175,25 @@ The local stack was exercised with:
 ```sh
 docker compose up --build
 docker compose exec api python -m app.seed
-docker compose exec api python -m app.seed
+./scripts/e2e-check.sh
 ```
 
-The second seed run left three demo books, and a bearer-authenticated request to the PDF content endpoint returned a valid PDF. This covers the seed path, Better Auth verification, PostgreSQL metadata, MinIO storage, Redis cache invalidation, and protected file streaming.
+The E2E script checks all seven services, auth flows (signup, verify, login, reset), library CRUD, PDF streaming, Redis caching, user isolation, and confirms the Next.js app has no API routes. The second seed run left three demo books, and a bearer-authenticated request to the PDF content endpoint returned a valid PDF.
+
+## Optional features implemented
+
+Beyond the required core flow, this build includes:
+
+- Responsive UI polish with dark mode, loading skeletons, and empty states
+- In-app email verification at `/verify?token=...` with links routed through the web app
+- Password reset pending screens with Mailpit instructions
+- Route-specific page titles and social metadata
+
+Not implemented: automated tests, CI, EPUB support, search, tags, reading progress, or PDF.js controls.
 
 ## Intentional limits
 
 - The app supports PDF files only; EPUB, annotations, search, and progress tracking are out of scope.
 - Uploads are read into FastAPI memory and capped at 25 MB, which is suitable for this local take-home scope rather than large-file production uploads.
 - The local Compose configuration uses HTTP, local credentials, and Mailpit; production deployment would require TLS, managed secrets, persistent backups, and observability.
+- The Next.js app is frontend-only: no API routes, server actions, or auth middleware. All business logic lives in the Hono auth service or FastAPI backend.

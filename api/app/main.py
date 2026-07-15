@@ -202,6 +202,11 @@ async def create_book(
     description: Annotated[str | None, Form()] = None,
     reading_status: Annotated[ReadingStatus, Form()] = ReadingStatus.unread,
 ) -> Book:
+    normalized_title = title.strip()
+    normalized_author = author.strip()
+    if not normalized_title or not normalized_author:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Title and author are required")
+
     content = await file.read()
     if len(content) > MAX_PDF_BYTES:
         raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail="PDF exceeds 25 MB")
@@ -224,7 +229,7 @@ async def create_book(
                 INSERT INTO library.books (id, user_id, title, author, description, reading_status, object_key)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """,
-                (book_id, user_id, title.strip(), author.strip(), description, reading_status, object_key),
+                (book_id, user_id, normalized_title, normalized_author, description, reading_status, object_key),
             )
     except Exception:
         object_store().remove_object(BOOK_BUCKET, object_key)

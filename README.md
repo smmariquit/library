@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/hero.png" alt="Personal Library — your books, ready when you are" width="820">
+  <img src="docs/hero.png" alt="Personal Library: your books, ready when you are" width="820">
 </p>
 
 <p align="center">
@@ -175,7 +175,7 @@ sequenceDiagram
     W->>A: verify-email(token)
     A-->>W: Session cookie (auto sign-in)
     W->>A: GET /token (JWT plugin)
-    A-->>W: EdDSA JWT — sub, iss, aud, 15 min
+    A-->>W: EdDSA JWT (sub, iss, aud, 15 min)
     W->>F: GET /books · Authorization: Bearer JWT
     F->>A: Fetch JWKS (cached), verify signature + iss + aud
     F-->>W: 200 books
@@ -272,6 +272,10 @@ Beyond the required core flow, this build includes:
 - Route-specific page titles and social metadata
 
 Not implemented: unit or integration test suites, CI, EPUB support, search, tags, reading progress, or PDF.js controls. End-to-end coverage is provided by `scripts/e2e-check.sh` and the Playwright walkthrough (see [Verification performed](#verification-performed)) rather than a unit-test suite.
+
+## How this was built (Cursor skills)
+
+**[Hallmark](https://github.com/Nutlope/hallmark)** (UI), **[no-ai-slop](https://github.com/realrossmanngroup/no_ai_slop_writing_rules)** (Rossmann prose), and **fuck-slop** (text pass), plus E2E/Playwright verification. Full credits: **[docs/skills.md](docs/skills.md)**.
 
 ## Intentional limits
 

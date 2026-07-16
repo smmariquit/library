@@ -5,7 +5,7 @@ import { Upload } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
-import { Alert, Button, Eyebrow, FieldLabel, LoadingShelf, Panel, SelectInput, TextArea, TextInput } from "@/components/ui";
+import { Alert, Button, FieldLabel, LoadingShelf, Panel, SelectInput, TextArea, TextInput } from "@/components/ui";
 import { api } from "@/lib/api";
 
 export default function NewBookPage() {
@@ -38,8 +38,7 @@ export default function NewBookPage() {
   return (
     <AppShell>
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <Eyebrow>Add a book</Eyebrow>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-strong">Put a new PDF on your shelf.</h1>
+        <h1 className="text-4xl font-semibold tracking-tight text-strong">Put a new PDF on your shelf.</h1>
         <p className="mt-3 text-sm leading-6 text-muted">Upload a PDF, add a few details, and it will appear on your shelf right away.</p>
         <Panel className="mt-8 p-6">
           <form className="grid gap-5" onSubmit={submit}>

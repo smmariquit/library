@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
-import { Alert, Button, Eyebrow, LoadingShelf, StatusBadge } from "@/components/ui";
+import { Alert, Button, LoadingShelf, StatusBadge } from "@/components/ui";
 import { api, type Book } from "@/lib/api";
 
 export default function LibraryPage() {
@@ -39,8 +39,7 @@ export default function LibraryPage() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>Your shelf</Eyebrow>
-            <h1 className="mt-2 text-4xl font-semibold tracking-tight text-strong">My library</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-strong">My library</h1>
             <p className="mt-2 text-sm text-muted">
               {books?.length === 0 ? "No books yet — your shelf is waiting." : `${books?.length ?? 0} book${books?.length === 1 ? "" : "s"} on your shelf.`}
             </p>

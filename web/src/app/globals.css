@@ -96,14 +96,6 @@ h3 {
   }
 }
 
-.eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
 .panel {
   border: 1px solid var(--line);
   border-radius: 1.25rem;

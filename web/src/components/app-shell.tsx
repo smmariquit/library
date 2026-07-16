@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <Link href="/library" className="brand-mark text-strong">
             <span className="brand-icon h-9 w-9">
-              <BookOpen aria-hidden="true" className="h-4 w-4" />
+              <BookOpen aria-hidden="true" className="h-5 w-5" />
             </span>
             Personal Library
           </Link>

@@ -13,7 +13,7 @@ export function AuthCard({ children }: { children: React.ReactNode }) {
           <div className="flex items-start justify-between gap-4">
             <Link href="/" className="brand-mark text-strong hover:opacity-80">
               <span className="brand-icon h-9 w-9">
-                <BookOpen aria-hidden="true" className="h-4 w-4" />
+                <BookOpen aria-hidden="true" className="h-5 w-5" />
               </span>
               Personal Library
             </Link>

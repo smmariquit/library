@@ -250,12 +250,21 @@ async def update_book(
     update: BookUpdate,
     user_id: Annotated[str, Depends(current_user)],
 ) -> Book:
-    changes = update.model_dump(exclude_none=True)
+    # exclude_unset keeps only fields the client actually sent, so `description: null`
+    # clears the column. exclude_none would silently drop it (false "saved" to the user).
+    changes = update.model_dump(exclude_unset=True)
     if not changes:
         return row_to_book(get_owned_book(book_id, user_id))
 
+    for field in ("title", "author"):
+        if field in changes:
+            trimmed = (changes[field] or "").strip()
+            if not trimmed:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Title and author cannot be empty")
+            changes[field] = trimmed
+
     fields = ", ".join(f"{field} = %s" for field in changes)
-    values = [str(value) for value in changes.values()]
+    values = list(changes.values())
     with database() as connection:
         row = connection.execute(
             f"UPDATE library.books SET {fields}, updated_at = NOW() "
@@ -271,13 +280,16 @@ async def update_book(
 @app.delete("/books/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(book_id: str, user_id: Annotated[str, Depends(current_user)]) -> None:
     book = get_owned_book(book_id, user_id)
-    object_store().remove_object(BOOK_BUCKET, book["object_key"])
+    # Delete metadata first: a failure here leaves the book intact. Removing the
+    # object first would risk a live row pointing at a deleted file if the DB
+    # delete then failed. A failed object delete only orphans bytes, never metadata.
     with database() as connection:
         connection.execute(
             "DELETE FROM library.books WHERE id = %s AND user_id = %s",
             (book_id, user_id),
         )
     await invalidate_books(user_id)
+    object_store().remove_object(BOOK_BUCKET, book["object_key"])
 
 
 @app.get("/books/{book_id}/read-url")

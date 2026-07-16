@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, BookOpenCheck, ChartNoAxesColumnIncreasing, LibraryBig, Upload } from "lucide-react";
+import { BookOpenCheck, ChartNoAxesColumnIncreasing, Upload } from "lucide-react";
 import { PageBackground } from "@/components/page-background";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Eyebrow } from "@/components/ui";
 import { useAuth } from "@/components/auth-provider";
 
 const features = [
@@ -23,20 +22,8 @@ export default function Home() {
           <ThemeToggle />
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <span className="stat-pill">
-            <BookOpen aria-hidden="true" className="h-4 w-4 text-amber-800" />
-            PDF library for quiet reading
-          </span>
-          <span className="stat-pill">
-            <LibraryBig aria-hidden="true" className="h-4 w-4 text-amber-800" />
-            Upload, organize, resume
-          </span>
-        </div>
-
         <div className="max-w-3xl">
-          <Eyebrow>Personal Library</Eyebrow>
-          <h1 className="hero-title mt-4 font-semibold text-strong">
+          <h1 className="hero-title font-semibold text-strong">
             Your books, ready when you are.
           </h1>
           <p className="hero-lede mt-5">
@@ -63,13 +50,18 @@ export default function Home() {
           )}
         </div>
 
-        <section className="mt-4 grid gap-4 sm:grid-cols-3">
-          {features.map(({ icon: Icon, title, copy }) => (
-            <article key={title} className="panel p-5">
-              <Icon aria-hidden="true" className="h-5 w-5 text-amber-800" />
-              <h2 className="mt-4 text-lg font-semibold text-strong">{title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted">{copy}</p>
-            </article>
+        <section className="mt-4 max-w-2xl">
+          {features.map(({ icon: Icon, title, copy }, index) => (
+            <div
+              key={title}
+              className={`flex gap-4 py-5 ${index > 0 ? "border-t border-[var(--line)]" : ""}`}
+            >
+              <Icon aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-amber-800" />
+              <div>
+                <h2 className="text-lg font-semibold text-strong">{title}</h2>
+                <p className="mt-1 text-sm leading-6 text-muted">{copy}</p>
+              </div>
+            </div>
           ))}
         </section>
       </main>

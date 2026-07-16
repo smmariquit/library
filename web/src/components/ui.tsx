@@ -13,10 +13,6 @@ const statusLabels: Record<Book["reading_status"], string> = {
   finished: "Finished",
 };
 
-export function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="eyebrow">{children}</p>;
-}
-
 export function StatusBadge({ status }: { status: Book["reading_status"] }) {
   return (
     <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${statusStyles[status]}`}>

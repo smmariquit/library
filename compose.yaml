@@ -1,3 +1,5 @@
+# Credentials and secrets are read from .env (copy .env.example to .env first).
+# No secret values are committed in this file; ${VAR:?...} fails fast if .env is missing a key.
 services:
   web:
     build: ./web
@@ -6,6 +8,7 @@ services:
     environment:
       NEXT_PUBLIC_AUTH_URL: http://localhost:3001
       NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_MAILPIT_URL: http://localhost:8025
     depends_on:
       auth:
         condition: service_started
@@ -17,11 +20,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-library}:${POSTGRES_PASSWORD:-library}@postgres:5432/${POSTGRES_DB:-library}
+      DATABASE_URL: postgresql://${POSTGRES_USER:?set in .env}:${POSTGRES_PASSWORD:?set in .env}@postgres:5432/${POSTGRES_DB:?set in .env}
       REDIS_URL: redis://redis:6379/0
       MINIO_ENDPOINT: minio:9000
-      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minio}
-      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minio-local-password}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?set in .env}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?set in .env}
       JWT_JWKS_URL: http://auth:3001/api/auth/jwks
       JWT_ISSUER: http://localhost:3001
       JWT_AUDIENCE: http://localhost:3001
@@ -42,8 +45,8 @@ services:
       - "3001:3001"
     environment:
       BETTER_AUTH_URL: http://localhost:3001
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-local-development-secret-change-me-123456}
-      AUTH_DATABASE_URL: postgresql://${POSTGRES_USER:-library}:${POSTGRES_PASSWORD:-library}@postgres:5432/${POSTGRES_DB:-library}?options=-c%20search_path%3Dauth
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set in .env}
+      AUTH_DATABASE_URL: postgresql://${POSTGRES_USER:?set in .env}:${POSTGRES_PASSWORD:?set in .env}@postgres:5432/${POSTGRES_DB:?set in .env}?options=-c%20search_path%3Dauth
       WEB_URL: http://localhost:3000
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
@@ -59,9 +62,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-library}
-      POSTGRES_USER: ${POSTGRES_USER:-library}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-library}
+      POSTGRES_DB: ${POSTGRES_DB:?set in .env}
+      POSTGRES_USER: ${POSTGRES_USER:?set in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-schemas.sql:ro,Z
@@ -88,8 +91,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio-local-password}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set in .env}
     volumes:
       - minio_data:/data
 

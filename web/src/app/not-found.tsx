@@ -17,7 +17,7 @@ export default function NotFound() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-900">
             <SearchX aria-hidden="true" className="h-6 w-6" />
           </div>
-          <p className="eyebrow mt-5">404</p>
+          <p className="mt-5 text-sm font-semibold text-muted">404</p>
           <h1 className="mt-2 text-3xl font-semibold text-strong">This page is not on the shelf</h1>
           <p className="mt-2 text-sm leading-6 text-muted">The address may be out of date, or the page may have moved.</p>
           <Link className="btn-primary mt-6 inline-flex" href="/">

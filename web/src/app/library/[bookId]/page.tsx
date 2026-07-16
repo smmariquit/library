@@ -9,6 +9,9 @@ import { useAuth } from "@/components/auth-provider";
 import { Alert, Button, FieldLabel, LoadingBook, SelectInput, StatusBadge, TextArea, TextInput } from "@/components/ui";
 import { api, type Book } from "@/lib/api";
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
 export default function BookPage() {
   const params = useParams<{ bookId: string }>();
   const router = useRouter();
@@ -131,6 +134,9 @@ export default function BookPage() {
             <StatusBadge status={book.reading_status} />
             <h1 className="mt-4 text-4xl font-semibold tracking-tight text-strong">{book.title}</h1>
             <p className="mt-2 text-lg text-muted">{book.author}</p>
+            <p className="mt-3 text-sm text-muted">
+              Uploaded {formatDate(book.created_at)} · Updated {formatDate(book.updated_at)}
+            </p>
             <Button className="mt-6" loading={readerLoading} onClick={openReader}>
               {!readerLoading && <BookOpen aria-hidden="true" className="h-4 w-4" />}
               {readerLoading ? "Opening PDF…" : pdfURL ? "Reload PDF" : "Read PDF"}

@@ -1,0 +1,11 @@
+{
+  "name": "library-ui-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "walkthrough": "playwright test walkthrough.spec.js --reporter=line"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

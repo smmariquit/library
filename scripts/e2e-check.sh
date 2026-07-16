@@ -14,7 +14,7 @@ require() {
   if eval "$2"; then ok "$1"; else bad "$1"; fi
 }
 
-echo "=== Bscale E2E compliance check ==="
+echo "=== Personal Library E2E compliance check ==="
 
 for i in $(seq 1 30); do
   curl -sf http://localhost:3001/health >/dev/null && curl -sf http://localhost:8000/health >/dev/null && break

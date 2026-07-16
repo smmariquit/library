@@ -2,7 +2,7 @@
 
 import { Alert } from "@/components/ui";
 
-const MAILPIT_URL = "http://localhost:8025";
+const MAILPIT_URL = process.env.NEXT_PUBLIC_MAILPIT_URL ?? "http://localhost:8025";
 
 type MailpitInstructionsProps = {
   email: string;

@@ -41,7 +41,7 @@ export default function LibraryPage() {
           <div>
             <h1 className="text-4xl font-semibold tracking-tight text-strong">My library</h1>
             <p className="mt-2 text-sm text-muted">
-              {books?.length === 0 ? "No books yet — your shelf is waiting." : `${books?.length ?? 0} book${books?.length === 1 ? "" : "s"} on your shelf.`}
+              {books?.length === 0 ? "No books yet. Your shelf is waiting." : `${books?.length ?? 0} book${books?.length === 1 ? "" : "s"} on your shelf.`}
             </p>
           </div>
           <Link className="btn-primary" href="/library/new"><Plus aria-hidden="true" className="h-4 w-4" />Add a book</Link>

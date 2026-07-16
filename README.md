@@ -1,3 +1,19 @@
+<p align="center">
+  <img src="docs/hero.png" alt="Personal Library — your books, ready when you are" width="820">
+</p>
+
+<p align="center">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white">
+  <img alt="Hono" src="https://img.shields.io/badge/Hono-E36002?style=flat-square&logo=hono&logoColor=white">
+  <img alt="Better Auth" src="https://img.shields.io/badge/Better%20Auth-000000?style=flat-square">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white">
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white">
+  <img alt="MinIO" src="https://img.shields.io/badge/MinIO-C72E49?style=flat-square&logo=minio&logoColor=white">
+  <img alt="Mailpit" src="https://img.shields.io/badge/Mailpit-24A0ED?style=flat-square">
+</p>
+
 # Personal Library
 
 A local full-stack personal library for uploading, organizing, and reading PDF books. It is scoped to the core flow: create an account, verify the email, log in, upload a PDF, manage its metadata, and read it in the browser.
@@ -48,6 +64,26 @@ flowchart TB
 ```
 
 PostgreSQL is shared as a server only. Better Auth owns the `auth` schema; FastAPI owns the `library` schema and never writes Better Auth's tables.
+
+## Screens
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/landing.png" alt="Landing page"><br><em>Landing</em></td>
+    <td width="50%"><img src="docs/screenshots/login.png" alt="Login page"><br><em>Sign in</em></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/library.png" alt="Library list with reading-status badges"><br><em>Library</em></td>
+    <td><img src="docs/screenshots/library-dark.png" alt="Library in dark mode"><br><em>Library (dark)</em></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/reader.png" alt="Book detail with the in-browser PDF reader"><br><em>Book detail &amp; reader</em></td>
+    <td><img src="docs/screenshots/add-book.png" alt="Add-book form"><br><em>Add a book</em></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshots/email.png" alt="Verification email in Mailpit" width="49%"><br><em>Verification email (Mailpit)</em></td>
+  </tr>
+</table>
 
 ## Run locally
 
@@ -124,6 +160,28 @@ Requests to FastAPI include `Authorization: Bearer <JWT>`. FastAPI retrieves the
 
 Every query that finds, changes, deletes, or streams a book requires both its book ID and that authenticated user ID. A guessed book ID belonging to another user returns `404` and never exposes its metadata or file.
 
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant W as Next.js web
+    participant A as Hono · Better Auth
+    participant M as Mailpit
+    participant F as FastAPI
+    U->>W: Sign up (email, password)
+    W->>A: POST /sign-up/email
+    A->>M: Verification email
+    U->>M: Open verification link
+    U->>W: /verify?token
+    W->>A: verify-email(token)
+    A-->>W: Session cookie (auto sign-in)
+    W->>A: GET /token (JWT plugin)
+    A-->>W: EdDSA JWT — sub, iss, aud, 15 min
+    W->>F: GET /books · Authorization: Bearer JWT
+    F->>A: Fetch JWKS (cached), verify signature + iss + aud
+    F-->>W: 200 books
+    Note over W,F: On 401 (expired JWT) the web app re-mints a token from the session cookie and retries once.
+```
+
 ## Library API
 
 All book endpoints require a bearer token except `/health`.
@@ -149,9 +207,32 @@ The API streams PDFs after authorizing the requesting user rather than exposing 
 
 Redis caches `GET /books` for each user under `library:books:<user-id>` for 60 seconds. Creating, editing, or deleting a book deletes that user's cache key, so the next list request reads fresh PostgreSQL data. This is a bounded cache with explicit invalidation.
 
+## Data model
+
+Better Auth owns the `auth` schema; FastAPI owns `library.books` and never writes the auth tables. The link is logical: `library.books.user_id` holds the JWT `sub` (the Better Auth user id).
+
+```mermaid
+erDiagram
+    auth_user ||..o{ library_books : "user_id = JWT sub"
+    auth_user {
+        text id PK "owned by Better Auth"
+    }
+    library_books {
+        text id PK
+        text user_id "JWT sub (logical FK)"
+        text title
+        text author
+        text description "nullable"
+        text reading_status "unread | reading | finished"
+        text object_key "books/<user>/<book>.pdf"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+```
+
 ## Configuration
 
-Copy `.env.example` to `.env`. These values are safe local defaults; replace the two secrets before sharing the environment.
+Copy `.env.example` to `.env`. Compose reads every credential from `.env` and fails fast if one is missing; no secret values live in `compose.yaml`. These are safe local defaults; replace the two secrets before sharing the environment.
 
 | Variable | Purpose |
 | --- | --- |
@@ -176,9 +257,10 @@ The local stack was exercised with:
 docker compose up --build
 docker compose exec api python -m app.seed
 ./scripts/e2e-check.sh
+cd scripts/ui-e2e && npm install && npx playwright install chromium && npm run walkthrough
 ```
 
-The E2E script checks all seven services, auth flows (signup, verify, login, reset), library CRUD, PDF streaming, Redis caching, user isolation, and confirms the Next.js app has no API routes. The second seed run left three demo books, and a bearer-authenticated request to the PDF content endpoint returned a valid PDF.
+The E2E script checks all seven services, auth flows (signup, verify, login, reset), library CRUD, PDF streaming, Redis caching, user isolation, and confirms the Next.js app has no API routes. The Playwright walkthrough covers the same flows in a real browser (login, PDF iframe, signup verification, password reset).
 
 ## Optional features implemented
 
@@ -189,7 +271,7 @@ Beyond the required core flow, this build includes:
 - Password reset pending screens with Mailpit instructions
 - Route-specific page titles and social metadata
 
-Not implemented: automated tests, CI, EPUB support, search, tags, reading progress, or PDF.js controls.
+Not implemented: unit or integration test suites, CI, EPUB support, search, tags, reading progress, or PDF.js controls. End-to-end coverage is provided by `scripts/e2e-check.sh` and the Playwright walkthrough (see [Verification performed](#verification-performed)) rather than a unit-test suite.
 
 ## Intentional limits
 

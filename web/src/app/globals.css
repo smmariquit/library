@@ -16,8 +16,6 @@
   --card-bg-end: #f8f2e8;
   --skeleton-from: #e7e5e4;
   --skeleton-to: #f5f5f4;
-  --glow-warm: rgba(251, 191, 36, 0.22);
-  --glow-cool: rgba(168, 162, 158, 0.18);
   --font-body: var(--font-geist-sans), "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display: Iowan Old Style, Palatino Linotype, Palatino, Georgia, Cambria, "Times New Roman", serif;
   color-scheme: light;
@@ -39,8 +37,6 @@
   --card-bg-end: #171412;
   --skeleton-from: #292524;
   --skeleton-to: #44403c;
-  --glow-warm: rgba(245, 158, 11, 0.12);
-  --glow-cool: rgba(120, 113, 108, 0.16);
   color-scheme: dark;
 }
 
@@ -67,58 +63,7 @@ h3 {
 
 .page-canvas {
   overflow-x: clip;
-  background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--glow-warm) 100%, transparent), transparent 28%),
-    radial-gradient(circle at bottom right, color-mix(in srgb, var(--glow-cool) 100%, transparent), transparent 32%),
-    linear-gradient(180deg, var(--background) 0%, color-mix(in srgb, var(--background) 88%, #000) 100%);
-}
-
-.page-glow {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(70px);
-}
-
-.page-glow-top {
-  top: -8rem;
-  right: -4rem;
-  height: 18rem;
-  width: 18rem;
-  background: var(--glow-warm);
-}
-
-.page-glow-bottom {
-  bottom: -10rem;
-  left: -6rem;
-  height: 20rem;
-  width: 20rem;
-  background: var(--glow-cool);
-}
-
-.page-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(120, 113, 108, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(120, 113, 108, 0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 85%);
-}
-
-.auth-shelf {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 12rem;
-  background:
-    linear-gradient(180deg, transparent, rgba(28, 25, 23, 0.04)),
-    repeating-linear-gradient(
-      90deg,
-      rgba(154, 52, 18, 0.12) 0,
-      rgba(154, 52, 18, 0.12) 2.4rem,
-      rgba(120, 113, 108, 0.08) 2.4rem,
-      rgba(120, 113, 108, 0.08) 4.8rem
-    );
-  mask-image: linear-gradient(180deg, transparent, black 55%);
+  background: var(--background);
 }
 
 .page-enter {

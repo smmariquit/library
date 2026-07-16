@@ -6,6 +6,10 @@ import { ImageResponse } from "../web/node_modules/next/og.js";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outPath = join(root, ".github", "social-preview.png");
 
+// GitHub crops edges on some surfaces; keep copy inside ~100px margins.
+const padX = 120;
+const padY = 100;
+
 const mark = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#9a3412"/><g transform="translate(5 5) scale(0.9167)" fill="none" stroke="#fbf3e7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></g></svg>`;
 const markSrc = `data:image/svg+xml;base64,${Buffer.from(mark).toString("base64")}`;
 
@@ -19,21 +23,21 @@ const image = new ImageResponse(
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        justifyContent: "space-between",
-        padding: "80px",
+        justifyContent: "center",
+        padding: `${padY}px ${padX}px`,
         width: "100%",
       },
       children: [
         {
           type: "div",
           props: {
-            style: { alignItems: "center", display: "flex", gap: 20 },
+            style: { alignItems: "center", display: "flex", gap: 20, marginBottom: 40 },
             children: [
-              { type: "img", props: { src: markSrc, width: 72, height: 72 } },
+              { type: "img", props: { src: markSrc, width: 64, height: 64 } },
               {
                 type: "div",
                 props: {
-                  style: { display: "flex", fontSize: 30, fontWeight: 600 },
+                  style: { display: "flex", fontSize: 28, fontWeight: 600 },
                   children: "Personal Library",
                 },
               },
@@ -43,7 +47,11 @@ const image = new ImageResponse(
         {
           type: "div",
           props: {
-            style: { display: "flex", flexDirection: "column", maxWidth: "960px" },
+            style: {
+              display: "flex",
+              flexDirection: "column",
+              maxWidth: 920,
+            },
             children: [
               {
                 type: "div",
@@ -51,9 +59,9 @@ const image = new ImageResponse(
                   style: {
                     display: "flex",
                     fontFamily: "Georgia, serif",
-                    fontSize: 80,
+                    fontSize: 68,
                     letterSpacing: -2,
-                    lineHeight: 1.05,
+                    lineHeight: 1.08,
                   },
                   children: "Your books, ready when you are.",
                 },
@@ -64,9 +72,9 @@ const image = new ImageResponse(
                   style: {
                     color: "#a8a29e",
                     display: "flex",
-                    fontSize: 30,
+                    fontSize: 26,
                     lineHeight: 1.4,
-                    marginTop: 28,
+                    marginTop: 20,
                   },
                   children: "Upload, organize, and read your PDFs in one quiet shelf.",
                 },

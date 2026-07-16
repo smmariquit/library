@@ -311,18 +311,6 @@ h3 {
   color: var(--ink-muted);
 }
 
-.stat-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--paper) 72%, transparent);
-  padding: 0.45rem 0.9rem;
-  font-size: 0.875rem;
-  color: var(--ink-muted);
-}
-
 .app-header {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 100%, transparent);
   background: var(--header-bg);

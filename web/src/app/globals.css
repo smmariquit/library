@@ -331,6 +331,7 @@ h3 {
 
 [data-theme="dark"] .status-reading {
   border-color: #92400e;
+  background: color-mix(in srgb, #92400e 32%, var(--paper));
   color: #fcd34d;
 }
 
@@ -342,6 +343,7 @@ h3 {
 
 [data-theme="dark"] .status-finished {
   border-color: #065f46;
+  background: color-mix(in srgb, #065f46 35%, var(--paper));
   color: #6ee7b7;
 }
 
